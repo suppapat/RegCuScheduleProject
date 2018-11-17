@@ -2,7 +2,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-class Semester():
+class Semester:
 
     studyProgram=''
     semester=''
@@ -59,4 +59,43 @@ class Semester():
         #data=soup.find_all("font",{"face":"MS Sans Serif",'color':'#660000'})"""
         return course_list
 
+    def getCourse(self,courseID):
+        s = Subject(self.studyProgram,courseID,self.cookie)
+        return s
+
+
+class Subject(Semester):
+
+    courseID=''
+    section=[]
+
+    def __init__(self,studyProgram,courseID,cookie):
+        self.studyProgram=studyProgram
+        self.courseID=courseID
+        self.cookie=cookie
+
+    def getCourseDetail(self):
+        param={
+            'courseNo': self.courseID,
+            'studyProgram': self.studyProgram #S
+        }
+        url_cen = "https://cas.reg.chula.ac.th/servlet/com.dtm.chula.cs.servlet.QueryCourseScheduleNew.CourseScheduleDtlNewServlet"
+        result_center = requests.get(url_cen, verify=False, cookies=self.cookie,params=param)
+        soup_all = BeautifulSoup(result_center.content, "html.parser")
+        data_all = soup_all("td")
+        return data_all
+
+
+
+class Section(Subject):
+
+    section=0
+    teaching=''
+    teachTime=[]
+    remark=''
+    studentRegis=''
+    studentMax=''
+
+    def __init__(self):
+        pass
 
